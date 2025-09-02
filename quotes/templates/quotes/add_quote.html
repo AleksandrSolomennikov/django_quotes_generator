@@ -1,0 +1,30 @@
+{% extends 'quotes/base.html' %}
+{% block content %}
+    <h2>Добавить цитату</h2>
+
+{% if not sources_exist %}
+  <div style="margin-bottom: 15px; padding: 10px; border: 1px solid red;">
+    ⚠️ Сначала создайте хотя бы один источник:
+    <a href="{% url 'add_source' %}">+ Добавить источник</a>
+  </div>
+{% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <p>
+            {{ form.source.label_tag }}<br>
+            {{ form.source }}
+            <small><a href="{% url 'quotes:add_source' %}">+ Добавить источник</a></small>
+        </p>
+        <p>
+            {{ form.text.label_tag }}<br>
+            {{ form.text }}
+        </p>
+        <p>
+            {{ form.weight.label_tag }}<br>
+            {{ form.weight }}
+        </p>
+        <button type="submit">Добавить</button>
+    </form>
+{% endblock %}

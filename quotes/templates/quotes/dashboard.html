@@ -1,0 +1,14 @@
+{% extends 'quotes/base.html' %}
+{% block content %}
+    <h2>Дашборд</h2>
+    <p>Всего цитат: {{ total }}</p>
+    <p>Всего источников: {{ total_sources }}</p>
+    <h3>Последние цитаты</h3>
+    <ul>
+        {% for q in latest %}
+            <li>{{ q.text|truncatechars:120 }} — {{ q.source.name }} ({{ q.created_at }})</li>
+        {% empty %}
+            <li>Нет цитат</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
