@@ -2,21 +2,23 @@
 
 {% block content %}
     {% if quote %}
-        <article class="quote">
-            <p class="text">{{ quote.text }}</p>
-            <p class="meta">— {{ quote.source.name }} (вес: {{ quote.weight }})</p>
-            <p class="meta">
-                Просмотров: {{ quote.views }} |
-                Лайки: <span id="likes">{{ quote.likes }}</span> |
-                Дизлайки: <span id="dislikes">{{ quote.dislikes }}</span>
-            </p>
+        <div class="quote-container">
+            <article class="quote">
+                <p class="text">{{ quote.text }}</p>
+                <p class="meta">— {{ quote.source.name }} (вес: {{ quote.weight }})</p>
+                <p class="meta">
+                    Просмотров: {{ quote.views }} |
+                    Лайки: <span id="likes">{{ quote.likes }}</span> |
+                    Дизлайки: <span id="dislikes">{{ quote.dislikes }}</span>
+                </p>
 
-            <form id="vote-form" method="post" action="{% url 'quotes:vote_quote' quote.pk %}">
-                {% csrf_token %}
-                <button type="button" data-action="like">👍 Лайк</button>
-                <button type="button" data-action="dislike">👎 Дизлайк</button>
-            </form>
-        </article>
+                <form id="vote-form" method="post" action="{% url 'quotes:vote_quote' quote.pk %}">
+                    {% csrf_token %}
+                    <button type="button" data-action="like">👍 Лайк</button>
+                    <button type="button" data-action="dislike">👎 Дизлайк</button>
+                </form>
+            </article>
+        </div>
 
         <script>
             const form = document.getElementById('vote-form');
@@ -43,7 +45,10 @@
                 });
             });
         </script>
+
     {% else %}
         <p>Цитат ещё нет. <a href="{% url 'quotes:add_quote' %}">Добавьте первую</a>.</p>
     {% endif %}
+
+    
 {% endblock %}

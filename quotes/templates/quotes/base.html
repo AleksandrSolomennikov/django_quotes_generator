@@ -9,16 +9,30 @@
 </head>
 <body>
     <header>
-        <h1><a href="{% url 'quotes:index' %}">Цитаты</a></h1>
-        <nav>
-            <a href="{% url 'quotes:add_quote' %}">Добавить цитату</a> |
-            <a href="{% url 'quotes:add_source' %}">Добавить источник</a> |
-            <a href="{% url 'quotes:top10' %}">Топ-10</a> |
-            <a href="{% url 'quotes:dashboard' %}">Дашборд</a>
-        </nav>
+        <h1 style="text-align:center;"><a href="{% url 'quotes:index' %}">Цитатник</a></h1>
+
     </header>
     <main>
         {% block content %}{% endblock %}
+
+        <div class="menu-wrapper">
+            <button class="menu-toggle">| | |</button>
+            <div class="menu" id="menu">
+                <a href="{% url 'quotes:add_source' %}">➕ Добавить источник</a>
+                <a href="{% url 'quotes:add_quote' %}">📝 Добавить цитату</a>
+                <a href="{% url 'quotes:top10' %}">🏆 Топ-10</a>
+                <a href="{% url 'quotes:dashboard' %}">📊 Дашборд</a>
+            </div>
+        </div>
+
+        <script>
+            const menuBtn = document.querySelector('.menu-toggle');
+            const menu = document.getElementById('menu');
+
+            menuBtn.addEventListener('click', () => {
+                menu.classList.toggle('open');
+            });
+        </script>
     </main>
 </body>
 </html> 

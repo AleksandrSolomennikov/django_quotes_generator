@@ -1,6 +1,106 @@
-body{font-family: Arial, sans-serif; margin:20px}
-header{margin-bottom:20px}
-.quote{border-left:4px solid #555;padding-left:12px}
-.text{font-size:1.2rem}
-meta{color:#666}
-button{margin-right:6px}
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column; /* выстраиваем элементы сверху вниз */
+    align-items: center;    /* по центру горизонтали */
+    background: #ffe8be;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    margin-top: 30px;  /* отступ сверху */
+    margin-bottom: 40px; /* расстояние до цитаты */
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: purple;
+}
+
+.quote-container {
+    text-align: center;
+    max-width: 600px;
+    padding: 20px;
+    background: rgb(255, 245, 219);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.quote {
+    border-left: 4px solid #555;
+    padding-left: 12px;
+}
+
+.text {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.meta {
+    color: #666;
+    margin: 5px 0;
+}
+
+button {
+    margin: 8px 4px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #d8f0ff;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #eee;
+}
+
+
+.menu-wrapper {
+    margin-top: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.menu-toggle {
+    font-size: 20px;
+    padding: 8px 14px;
+    background: #ffe8be;
+    border: 1px solid #e9d5b1;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.menu {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 10px;
+    background: #ffe8be;
+    border: 0px solid #dddddd;
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(250, 180, 50, 0.486);
+    padding: 10px 20px;
+    min-width: 200px;
+    text-align: left;
+}
+
+.menu.open {
+    display: block;
+}
+
+.menu a {
+    display: block;
+    padding: 8px 0;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.menu a:hover {
+    color: purple;
+}
