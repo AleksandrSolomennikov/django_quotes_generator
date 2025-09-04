@@ -1,14 +1,14 @@
 {% extends 'quotes/base.html' %}
 {% block content %}
     <h2>Топ-10 цитат по лайкам</h2>
-    <ol>
+    <div class="quote-container">
         {% for q in top %}
-        <li>
-            <blockquote>{{ q.text }}</blockquote>
-            <small>— {{ q.source.name }} | Лайки: {{ q.likes }} | Просмотров: {{ q.views }}</small>
-        </li>
+        <article class="quote">
+            <p class="text">“{{ q.text }}”</p>
+            <p class="meta">— {{ q.source.name }} | ❤️ {{ q.likes }} | 👁️ {{ q.views }}</p>
+        </article>
         {% empty %}
-            <li>Пока нет цитат.</li>
+            <p>Пока нет цитат.</p>
         {% endfor %}
-    </ol>
+    </div>
 {% endblock %} 

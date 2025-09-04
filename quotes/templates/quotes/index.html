@@ -7,16 +7,16 @@
                 <p class="text">{{ quote.text }}</p>
                 <p class="meta">— {{ quote.source.name }} (вес: {{ quote.weight }})</p>
                 <p class="meta">
-                    Просмотров: {{ quote.views }} |
-                    Лайки: <span id="likes">{{ quote.likes }}</span> |
-                    Дизлайки: <span id="dislikes">{{ quote.dislikes }}</span>
+                    👁️: {{ quote.views }} |
+                    ❤️: <span id="likes">{{ quote.likes }}</span> |
+                    💔: <span id="dislikes">{{ quote.dislikes }}</span>
                 </p>
 
                 {% if user.is_authenticated %}
                     <form id="vote-form" method="post" action="{% url 'quotes:vote_quote' quote.pk %}">
                         {% csrf_token %}
-                        <button type="button" data-action="like">👍 Лайк</button>
-                        <button type="button" data-action="dislike">👎 Дизлайк</button>
+                        <button type="button" data-action="like">❤️ Лайк</button>
+                        <button type="button" data-action="dislike">💔 Дизлайк</button>
                     </form>
                     <script>
                         const form = document.getElementById('vote-form');
@@ -44,7 +44,7 @@
                         });
                     </script>
                 {% else %}
-                    <p><a href="{% url 'login' %}">Войдите</a>, чтобы поставить лайк или дизлайк.</p>
+                    <p>Пожалуйста, <a href="{% url 'login' %}">войдите</a>, чтобы поставить лайк или дизлайк.</p>
                 {% endif %}
             </article>
         </div>

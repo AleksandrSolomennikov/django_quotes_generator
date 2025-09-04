@@ -21,8 +21,11 @@ header h1 {
 }
 
 .quote-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     text-align: center;
-    max-width: 600px;
+    max-width: 1000px;
     padding: 20px;
     background: rgb(255, 245, 219);
     border-radius: 12px;
