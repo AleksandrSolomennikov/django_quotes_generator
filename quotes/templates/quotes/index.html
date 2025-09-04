@@ -2,7 +2,7 @@
 
 {% block content %}
     {% if quote %}
-        <div class="quote-container">
+        <div id="randomQuote" class="quote-container">
             <article class="quote">
                 <p class="text">{{ quote.text }}</p>
                 <p class="meta">— {{ quote.source.name }} (вес: {{ quote.weight }})</p>
@@ -48,6 +48,24 @@
                 {% endif %}
             </article>
         </div>
+
+        
+        <style>
+            .quote-container { display: flex; flex-direction: column; gap: 15px; }
+            .quote { opacity: 0; transform: translateY(10px); transition: all 0.5s ease; }
+            .quote.show { opacity: 1; transform: translateY(0); }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const quotes = document.querySelectorAll('#randomQuote .quote');
+                quotes.forEach((quote, index) => {
+                    setTimeout(() => {
+                        quote.classList.add('show');
+                    }, index * 150); // Задержка для каждого элемента
+                });
+            });
+        </script>
 
     {% else %}
         <p>Цитат ещё нет. <a href="{% url 'quotes:add_quote' %}">Добавьте первую</a>.</p>

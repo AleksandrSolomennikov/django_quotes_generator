@@ -10,7 +10,6 @@ from django.contrib.auth import login
 
 import random
 
-
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -100,6 +99,23 @@ def dashboard(request):
     total_sources = sum(1 for _ in set(q.source_id for q in Quote.objects.all()))
     latest = Quote.objects.order_by('-created_at')[:10]
     return render(request, 'quotes/dashboard.html', {'total': total, 'total_sources': total_sources, 'latest': latest})
+
+def dashboard_filter(request):
+    filter_type = request.GET.get('filter', 'latest')
+
+    if filter_type == 'most_liked':
+        quotes = Quote.objects.order_by('-likes')[:100]
+    elif filter_type == 'most_important':
+        quotes = Quote.objects.order_by('-weight')[:100]
+    elif filter_type == 'longest':
+        quotes = Quote.objects.annotate(length=models.functions.Length('text')).order_by('-length')[:100]
+    elif filter_type == 'shortest':
+        quotes = Quote.objects.annotate(length=models.functions.Length('text')).order_by('length')[:100]
+    else:  # latest
+        quotes = Quote.objects.order_by('-created_at')[:100]
+
+    return render(request, 'quotes/quotes_list.html', {'quotes': quotes})
+
 
 def add_source(request):
     # Простая форма создания источника, чтобы выпадающий список не был пустым

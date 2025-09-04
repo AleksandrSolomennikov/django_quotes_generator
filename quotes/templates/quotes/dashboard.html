@@ -1,14 +1,114 @@
 {% extends 'quotes/base.html' %}
+
 {% block content %}
-    <h2>Дашборд</h2>
-    <p>Всего цитат: {{ total }}</p>
-    <p>Всего источников: {{ total_sources }}</p>
-    <h3>Последние цитаты</h3>
-    <ul>
-        {% for q in latest %}
-            <li>{{ q.text|truncatechars:120 }} — {{ q.source.name }} ({{ q.created_at }})</li>
-        {% empty %}
-            <li>Нет цитат</li>
-        {% endfor %}
-    </ul>
+<h2>Дашборд</h2>
+<p>Всего цитат: {{ total }}</p>
+<p>Всего источников: {{ total_sources }}</p>
+
+<!-- Дропдаун с кнопкой -->
+<div class="dropdown">
+    <button id="filterBtn">
+        Выбрать цитаты <span id="arrow">▼</span>
+    </button>
+    <div id="dropdownMenu" class="dropdown-content">
+        <a href="#" data-filter="latest">Последние цитаты</a>
+        <a href="#" data-filter="most_liked">Самые залайканные</a>
+        <a href="#" data-filter="most_important">Самые важные</a>
+        <a href="#" data-filter="longest">Самые длинные</a>
+        <a href="#" data-filter="shortest">Самые короткие</a>
+    </div>
+</div>
+
+<!-- Контейнер для цитат -->
+<div id="quotesContainer" class="quote-container">
+    {% for q in latest %}
+        <article class="quote">
+            <p class="text">{{ q.text|truncatechars:120 }}</p>
+            <p class="meta">— {{ q.source.name }} ({{ q.created_at }})</p>
+        </article>
+    {% empty %}
+        <p>Нет цитат</p>
+    {% endfor %}
+</div>
+
+<style>
+    /* Дропдаун */
+    .dropdown { position: relative; display: inline-block; margin-bottom: 20px; }
+    .dropdown-content { 
+        position: absolute; 
+        background-color: #f9f9f9; 
+        min-width: 200px; 
+        box-shadow: 0px 8px 16px rgba(0,0,0,0.2); 
+        z-index: 1; 
+        opacity: 0; 
+        transform: translateY(-10px); 
+        pointer-events: none;      /* Чтобы клики не проходили, пока скрыт */
+        transition: all 0.3s ease;
+    }
+    .dropdown-content.show { 
+        opacity: 1; 
+        transform: translateY(0); 
+        pointer-events: auto;      /* Делаем кликабельным */
+    }
+
+    .dropdown-content a { color: black; padding: 12px 16px; display: block; text-decoration: none; }
+    .dropdown-content a:hover { background-color: #f1f1f1; }
+
+    /* Стрелка */
+    #arrow { display: inline-block; transition: transform 0.3s ease; }
+
+    /* Цитаты */
+    .quote-container { display: flex; flex-direction: column; gap: 15px; }
+    .quote { opacity: 0; transform: translateY(10px); transition: all 0.5s ease; }
+    .quote.show { opacity: 1; transform: translateY(0); }
+</style>
+
+<script>
+    const DASHBOARD_FILTER_URL = "{% url 'quotes:dashboard_filter' %}";
+    const filterBtn = document.getElementById('filterBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const quotesContainer = document.getElementById('quotesContainer');
+    const arrow = document.getElementById('arrow');
+
+    // Показываем/скрываем меню и вращаем стрелку
+    filterBtn.addEventListener('click', () => {
+        dropdownMenu.classList.toggle('show');
+        arrow.style.transform = dropdownMenu.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+
+
+    // Обработка выбора фильтра
+    dropdownMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const filter = link.getAttribute('data-filter');
+            const response = await fetch(`${DASHBOARD_FILTER_URL}?filter=${filter}`);
+            if (response.ok) {
+                const html = await response.text();
+                quotesContainer.innerHTML = html;
+
+                // Анимация появления цитат
+                quotesContainer.querySelectorAll('.quote').forEach((q, i) => {
+                    setTimeout(() => q.classList.add('show'), i * 100);
+                });
+            }
+
+            dropdownMenu.classList.remove('show');
+            arrow.style.transform = 'rotate(0deg)';
+        });
+    });
+
+    // Закрытие меню при клике вне
+    window.onclick = function(event) {
+        if (!event.target.matches('#filterBtn') && !event.target.closest('.dropdown-content')) {
+            dropdownMenu.classList.remove('show');
+            arrow.style.transform = 'rotate(0deg)';
+        }
+    };
+
+    // Анимация для начальных цитат
+    quotesContainer.querySelectorAll('.quote').forEach((q, i) => {
+        setTimeout(() => q.classList.add('show'), i * 100);
+    });
+</script>
 {% endblock %}

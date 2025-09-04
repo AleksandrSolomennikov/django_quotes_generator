@@ -1,0 +1,8 @@
+{% for q in quotes %}
+    <article class="quote">
+        <p class="text">{{ q.text|truncatechars:120 }}</p>
+        <p class="meta">— {{ q.source.name }} ({{ q.created_at }})</p>
+    </article>
+{% empty %}
+    <p>Нет цитат</p>
+{% endfor %}
