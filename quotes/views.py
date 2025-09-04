@@ -1,11 +1,26 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Quote, Source
+from .models import Quote, Source, Vote
+from django.contrib.auth.decorators import login_required
 from .forms import QuoteForm, SourceForm
-import random
 from django.views.decorators.http import require_POST
 from django.db import transaction, models
 from django.http import JsonResponse
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 
+import random
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # сразу логиним после регистрации
+            return redirect('quotes:index')
+    else:
+        form = UserCreationForm()
+    return render(request, "registration/signup.html", {"form": form})
 
 
 def pick_weighted_random(quotes):
@@ -39,13 +54,34 @@ def add_quote(request):
 
 
 @require_POST
+@login_required
 def vote_quote(request, pk):
     q = get_object_or_404(Quote, pk=pk)
     action = request.POST.get('action')
-    if action == 'like':
-        Quote.objects.filter(pk=q.pk).update(likes=models.F('likes') + 1)
-    elif action == 'dislike':
-        Quote.objects.filter(pk=q.pk).update(dislikes=models.F('dislikes') + 1)
+
+    vote, created = Vote.objects.get_or_create(user=request.user, quote=q)
+
+    if not created:
+        # Пользователь уже голосовал — меняем только если тип другой
+        if vote.vote_type != action:
+            # Отменяем предыдущий голос
+            if vote.vote_type == 'like':
+                Quote.objects.filter(pk=q.pk).update(dislikes=models.F('dislikes') + 1)
+                Quote.objects.filter(pk=q.pk).update(likes=models.F('likes') - 1)
+            elif vote.vote_type == 'dislike':
+                Quote.objects.filter(pk=q.pk).update(likes=models.F('likes') + 1)
+                Quote.objects.filter(pk=q.pk).update(dislikes=models.F('dislikes') - 1)
+            # Ставим новый голос
+            vote.vote_type = action
+            vote.save()
+    else:
+        if action == 'like':
+            Quote.objects.filter(pk=q.pk).update(likes=models.F('likes') + 1)
+        elif action == 'dislike':
+            Quote.objects.filter(pk=q.pk).update(dislikes=models.F('dislikes') + 1)
+        vote.vote_type = action
+        vote.save()
+
     # If AJAX, return JSON
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         q.refresh_from_db()

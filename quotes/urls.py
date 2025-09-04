@@ -10,4 +10,5 @@ urlpatterns = [
     path('top10/', views.top10, name='top10'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('sources/add/', views.add_source, name='add_source'),
+    path("signup/", views.signup, name="signup"),
 ]

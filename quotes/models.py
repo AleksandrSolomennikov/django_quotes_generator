@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.contrib.auth.models import User
 
 class Source(models.Model):
     SOURCE_TYPES = [
@@ -35,3 +36,17 @@ class Quote(models.Model):
 
     class Meta:
         ordering = ['-likes', '-views']
+
+
+class Vote(models.Model):
+    VOTE_CHOICES = [
+        ('like', 'Лайк'),
+        ('dislike', 'Дизлайк'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quote = models.ForeignKey(Quote, on_delete=models.CASCADE, related_name="votes")
+    vote_type = models.CharField(max_length=7, choices=VOTE_CHOICES)
+
+    class Meta:
+        unique_together = ('user', 'quote')

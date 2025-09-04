@@ -7,6 +7,10 @@ SECRET_KEY = 'replace-me-with-secure-key'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
+# После успешного входа отправляем на главную страницу
+LOGIN_REDIRECT_URL = '/'
+
+
 CSRF_TRUSTED_ORIGINS = [
     "https://*.ngrok-free.app",
 ]
