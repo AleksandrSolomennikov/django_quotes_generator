@@ -15,7 +15,7 @@ def signup(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # сразу логиним после регистрации
+            login(request, user)
             return redirect('quotes:index')
     else:
         form = UserCreationForm()
@@ -36,7 +36,6 @@ def index(request):
     # Increment views atomically
     with transaction.atomic():
         Quote.objects.filter(pk=quote.pk).update(views=models.F('views') + 1)
-        # Refresh instance for display
         quote = Quote.objects.get(pk=quote.pk)
     return render(request, 'quotes/index.html', {'quote': quote})
 
@@ -81,7 +80,6 @@ def vote_quote(request, pk):
         vote.vote_type = action
         vote.save()
 
-    # If AJAX, return JSON
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         q.refresh_from_db()
         return JsonResponse({'likes': q.likes, 'dislikes': q.dislikes})
@@ -94,7 +92,6 @@ def top10(request):
 
 
 def dashboard(request):
-    # Simple dashboard: counts and latest
     total = Quote.objects.count()
     total_sources = sum(1 for _ in set(q.source_id for q in Quote.objects.all()))
     latest = Quote.objects.order_by('-created_at')[:10]
@@ -118,7 +115,6 @@ def dashboard_filter(request):
 
 
 def add_source(request):
-    # Простая форма создания источника, чтобы выпадающий список не был пустым
     if request.method == 'POST':
         form = SourceForm(request.POST)
         if form.is_valid():

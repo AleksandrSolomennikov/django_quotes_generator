@@ -23,8 +23,23 @@
 <div id="quotesContainer" class="quote-container">
     {% for q in latest %}
         <article class="quote">
-            <p class="text">{{ q.text|truncatechars:120 }}</p>
+            <p class="text">{{ q.text }}</p>
             <p class="meta">— {{ q.source.name }} ({{ q.created_at }})</p>
+                <p class="meta">
+                    👁️: {{ q.views }} |
+                    ❤️: <span id="likes-{{ q.pk }}">{{ q.likes }}</span> |
+                    💔: <span id="dislikes-{{ q.pk }}">{{ q.dislikes }}</span>
+                </p>
+
+                {% if user.is_authenticated %}
+                    <form class="vote-form" data-quote-id="{{ q.pk }}" method="post" action="{% url 'quotes:vote_quote' q.pk %}">
+                        {% csrf_token %}
+                        <button type="button" data-action="like">❤️ Лайк</button>
+                        <button type="button" data-action="dislike">💔 Дизлайк</button>
+                    </form>
+                {% else %}
+                    <p>Пожалуйста, <a href="{% url 'login' %}">войдите</a>, чтобы поставить лайк или дизлайк.</p>
+                {% endif %}
         </article>
     {% empty %}
         <p>Нет цитат</p>
@@ -109,6 +124,31 @@
     // Анимация для начальных цитат
     quotesContainer.querySelectorAll('.quote').forEach((q, i) => {
         setTimeout(() => q.classList.add('show'), i * 100);
+    });
+
+    // Event delegation for AJAX like/dislike
+    quotesContainer.addEventListener('click', function(e) {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const form = btn.closest('.vote-form');
+        if (!form) return;
+        const quoteId = form.dataset.quoteId;
+        const csrfToken = form.querySelector('input[name=csrfmiddlewaretoken]').value;
+        const data = new FormData();
+        data.append('action', btn.dataset.action);
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            body: data
+        })
+        .then(r => r.json())
+        .then(j => {
+            document.getElementById('likes-' + quoteId).textContent = j.likes;
+            document.getElementById('dislikes-' + quoteId).textContent = j.dislikes;
+        });
     });
 </script>
 {% endblock %}

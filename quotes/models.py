@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Source(models.Model):
     SOURCE_TYPES = [
@@ -21,7 +22,10 @@ class Source(models.Model):
 class Quote(models.Model):
     source = models.ForeignKey(Source, on_delete=models.CASCADE, related_name='quotes')
     text = models.TextField(unique=True)
-    weight = models.PositiveIntegerField(default=1)
+    weight = models.PositiveIntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     views = models.PositiveIntegerField(default=0)
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
