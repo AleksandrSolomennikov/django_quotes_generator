@@ -14,6 +14,7 @@ class QuoteForm(forms.ModelForm):
         cleaned = super().clean()
         source = cleaned.get('source')
         text = cleaned.get('text')
+        weight = cleaned.get('weight')
 
         # Проверка уникальности текста
         if Quote.objects.filter(text=text).exists():
@@ -23,6 +24,9 @@ class QuoteForm(forms.ModelForm):
             count = Quote.objects.filter(source=source).count()
             if count >= 3:
                 raise forms.ValidationError('У этого источника уже 3 цитаты.')
+
+        if weight is not None and (weight < 1 or weight > 5):
+            raise forms.ValidationError('Вес должен быть от 1 до 5.')
         return cleaned
     
 class SourceForm(forms.ModelForm):

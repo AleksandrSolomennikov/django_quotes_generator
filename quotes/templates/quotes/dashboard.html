@@ -126,29 +126,29 @@
         setTimeout(() => q.classList.add('show'), i * 100);
     });
 
-        // AJAX like/dislike for each quote
-        document.querySelectorAll('.vote-form').forEach(form => {
-            const quoteId = form.dataset.quoteId;
-            const csrfToken = form.querySelector('input[name=csrfmiddlewaretoken]').value;
-            form.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const data = new FormData();
-                    data.append('action', this.dataset.action);
-                    fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRFToken': csrfToken
-                        },
-                        body: data
-                    })
-                    .then(r => r.json())
-                    .then(j => {
-                        document.getElementById('likes-' + quoteId).textContent = j.likes;
-                        document.getElementById('dislikes-' + quoteId).textContent = j.dislikes;
-                    });
-                });
-            });
+    // Event delegation for AJAX like/dislike
+    quotesContainer.addEventListener('click', function(e) {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+        const form = btn.closest('.vote-form');
+        if (!form) return;
+        const quoteId = form.dataset.quoteId;
+        const csrfToken = form.querySelector('input[name=csrfmiddlewaretoken]').value;
+        const data = new FormData();
+        data.append('action', btn.dataset.action);
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            body: data
+        })
+        .then(r => r.json())
+        .then(j => {
+            document.getElementById('likes-' + quoteId).textContent = j.likes;
+            document.getElementById('dislikes-' + quoteId).textContent = j.dislikes;
         });
+    });
 </script>
 {% endblock %}

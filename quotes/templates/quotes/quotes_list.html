@@ -1,7 +1,22 @@
 {% for q in quotes %}
     <article class="quote">
-        <p class="text">{{ q.text|truncatechars:120 }}</p>
+        <p class="text">{{ q.text }}</p>
         <p class="meta">— {{ q.source.name }} ({{ q.created_at }})</p>
+            <p class="meta">
+                👁️: {{ q.views }} |
+                ❤️: <span id="likes-{{ q.pk }}">{{ q.likes }}</span> |
+                💔: <span id="dislikes-{{ q.pk }}">{{ q.dislikes }}</span>
+            </p>
+
+            {% if user.is_authenticated %}
+                <form class="vote-form" data-quote-id="{{ q.pk }}" method="post" action="{% url 'quotes:vote_quote' q.pk %}">
+                    {% csrf_token %}
+                    <button type="button" data-action="like">❤️ Лайк</button>
+                    <button type="button" data-action="dislike">💔 Дизлайк</button>
+                </form>
+            {% else %}
+                <p>Пожалуйста, <a href="{% url 'login' %}">войдите</a>, чтобы поставить лайк или дизлайк.</p>
+            {% endif %}
     </article>
 {% empty %}
     <p>Нет цитат</p>
