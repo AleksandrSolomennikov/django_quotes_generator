@@ -3,11 +3,10 @@ from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'replace-me-with-secure-key'
+SECRET_KEY = ''
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 
-# После успешного входа отправляем на главную страницу
 LOGIN_REDIRECT_URL = '/'
 
 
